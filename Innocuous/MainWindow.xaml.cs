@@ -24,7 +24,7 @@ namespace Innocuous
     {
         private Canvas canvas = new Canvas();
         int windowCount = 0;
-
+    
         public MainWindow()
         {
             InitializeComponent();
@@ -61,7 +61,7 @@ namespace Innocuous
                 Title = windowCount.ToString();
                 WPFWindow w = new WPFWindow(windowCount);
                 w.Show();
-                System.Threading.Thread.Sleep(500);
+                System.Threading.Thread.Sleep(250);
             }
         }
     }
