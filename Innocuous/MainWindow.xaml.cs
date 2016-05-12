@@ -16,8 +16,10 @@ namespace Innocuous
     {
         private Canvas canvas = new Canvas();
         int windowCount = 0;
-        string sayThis;
-    
+        string sayThis = "soi";
+        int maxWindows = 200;
+        int windowWait = 250;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,28 +34,36 @@ namespace Innocuous
         }
         public void Speak()
         {
-            SpeechSynthesizer speaker = new SpeechSynthesizer();
-            speaker.Rate = 1;
-            speaker.Volume = 100;
-            speaker.Speak(sayThis);
-            Console.Beep();
+            if (sayThis != "")
+            {
+                SpeechSynthesizer speaker = new SpeechSynthesizer();
+                speaker.Rate = 1;
+                speaker.Volume = 100;
+                speaker.Speak(sayThis);
+            }
         }
         public void OpenWindows()
         {
-            XmlReader xmlReader = XmlReader.Create("speak.xml");
-            while (xmlReader.Read())
+            try
             {
-                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name == "Speech"))
+                XmlReader xmlReader = XmlReader.Create("speak.xml");
+                while (xmlReader.Read())
                 {
-                    if (xmlReader.HasAttributes)
+                    if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name == "Speech"))
                     {
-                        sayThis = xmlReader.GetAttribute("say");
+                        if (xmlReader.HasAttributes)
+                        {
+                            sayThis = xmlReader.GetAttribute("say");
+                            maxWindows = Convert.ToInt32(xmlReader.GetAttribute("windowCount"));
+                            windowWait = Convert.ToInt32(xmlReader.GetAttribute("windowWait"));
+                        }
                     }
                 }
             }
+            catch{}
             while (true)
             {
-                if (windowCount == 500)
+                if (windowCount == maxWindows)
                 {
                     Environment.Exit(-1);
                 }
@@ -66,7 +76,7 @@ namespace Innocuous
                 Title = windowCount.ToString();
                 WPFWindow w = new WPFWindow(windowCount);
                 w.Show();
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(windowWait);
             }
         }
     }
