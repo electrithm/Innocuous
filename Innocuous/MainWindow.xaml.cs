@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Threading;
 using System.Speech.Synthesis;
+using System.Xml;
+//using System.Xml;
 
 namespace Innocuous
 {
@@ -24,6 +16,7 @@ namespace Innocuous
     {
         private Canvas canvas = new Canvas();
         int windowCount = 0;
+        string sayThis;
     
         public MainWindow()
         {
@@ -42,13 +35,25 @@ namespace Innocuous
             SpeechSynthesizer speaker = new SpeechSynthesizer();
             speaker.Rate = 1;
             speaker.Volume = 100;
-            speaker.Speak("soi");
+            speaker.Speak(sayThis);
+            Console.Beep();
         }
         public void OpenWindows()
         {
+            XmlReader xmlReader = XmlReader.Create("speak.xml");
+            while (xmlReader.Read())
+            {
+                if ((xmlReader.NodeType == XmlNodeType.Element) && (xmlReader.Name == "Speech"))
+                {
+                    if (xmlReader.HasAttributes)
+                    {
+                        sayThis = xmlReader.GetAttribute("say");
+                    }
+                }
+            }
             while (true)
             {
-                if (windowCount == 100)
+                if (windowCount == 500)
                 {
                     Environment.Exit(-1);
                 }
@@ -57,11 +62,11 @@ namespace Innocuous
                     Speak();
                 }).Start();
 
-                windowCount = windowCount+1;
+                windowCount = windowCount + 1;
                 Title = windowCount.ToString();
                 WPFWindow w = new WPFWindow(windowCount);
                 w.Show();
-                System.Threading.Thread.Sleep(250);
+                System.Threading.Thread.Sleep(100);
             }
         }
     }
